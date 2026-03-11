@@ -6,7 +6,7 @@ import { Cart, AddToCart } from '../models/cart.model';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private apiUrl = 'https://localhost:7200/api/cart';
+  private apiUrl = 'http://localhost:5272/api/cart';
   private cartSubject = new BehaviorSubject<Cart | null>(null);
   cart$ = this.cartSubject.asObservable();
 
