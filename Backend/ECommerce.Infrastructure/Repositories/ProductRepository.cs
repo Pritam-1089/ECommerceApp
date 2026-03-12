@@ -9,6 +9,16 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
 {
     public ProductRepository(AppDbContext context) : base(context) { }
 
+    public override async Task<IReadOnlyList<Product>> GetAllAsync()
+    {
+        return await _dbSet
+            .Where(p => p.IsActive)
+            .Include(p => p.Category)
+            .Include(p => p.Reviews)
+            .ToListAsync();
+    }
+
+
     public async Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(int categoryId) =>
         await _dbSet.Where(p => p.CategoryId == categoryId && p.IsActive)
             .Include(p => p.Category)

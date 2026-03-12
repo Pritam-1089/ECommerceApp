@@ -23,8 +23,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     }
 
 
-    public async Task<IReadOnlyList<T>> GetAllAsync() =>
-        await _dbSet.Where(e => e.IsActive).ToListAsync();
+    public virtual async Task<IReadOnlyList<T>> GetAllAsync() =>
+    await _dbSet.Where(e => e.IsActive).ToListAsync();
+
 
     public async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate) =>
         await _dbSet.Where(predicate).ToListAsync();
