@@ -5,13 +5,19 @@ namespace ECommerce.Application.DTOs;
 public class OrderDto
 {
     public int Id { get; set; }
-    public string OrderNumber { get; set; } = string.Empty;
+
+    public int UserId { get; set; }
+
+    public string OrderNumber { get; set; } = "";
+
     public decimal TotalAmount { get; set; }
-    public string Status { get; set; } = string.Empty;
+
+    public string Status { get; set; } = "";
+
     public DateTime CreatedAt { get; set; }
+
     public List<OrderItemDto> Items { get; set; } = new();
 }
-
 public class OrderItemDto
 {
     public int ProductId { get; set; }
