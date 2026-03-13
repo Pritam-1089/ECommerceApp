@@ -43,6 +43,22 @@ public class CategoryService : ICategoryService
         return ApiResponse<CategoryDto>.SuccessResponse(MapToDto(category), "Category created");
     }
 
+    public async Task<ApiResponse<CategoryDto>> UpdateCategoryAsync(int id, CreateCategoryDto dto)
+    {
+        var category = await _categoryRepo.GetByIdAsync(id);
+
+        if (category == null)
+            return ApiResponse<CategoryDto>.ErrorResponse("Category not found");
+
+        category.Name = dto.Name;
+        category.Description = dto.Description;
+        category.ImageUrl = dto.ImageUrl;
+        category.ParentCategoryId = dto.ParentCategoryId;
+
+        await _categoryRepo.UpdateAsync(category);
+
+        return ApiResponse<CategoryDto>.SuccessResponse(MapToDto(category), "Category updated successfully");
+    }
     public async Task<ApiResponse<bool>> DeleteCategoryAsync(int id)
     {
         var category = await _categoryRepo.GetByIdAsync(id);
