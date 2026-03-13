@@ -67,14 +67,14 @@ public class OrderService : IOrderService
             }
         }
         // STEP 2: Reduce stock AFTER validation
-        foreach (var item in cart.CartItems)
-        {
-            var product = await _productRepo.GetByIdAsync(item.ProductId);
+foreach (var item in cart.CartItems)
+{
+    var product = await _productRepo.GetByIdAsync(item.ProductId);
 
-            product!.StockQuantity -= item.Quantity;
+    product!.StockQuantity -= item.Quantity;
 
-            await _productRepo.UpdateAsync(product);
-        }
+    await _productRepo.UpdateAsync(product);
+}
 
         await _orderRepo.AddAsync(order);
         await _cartRepo.ClearCartAsync(cart);
@@ -110,10 +110,13 @@ public class OrderService : IOrderService
     private static OrderDto MapToDto(Order order) => new()
     {
         Id = order.Id,
+        UserId = order.UserId,   // ADD THIS
+
         OrderNumber = order.OrderNumber,
         TotalAmount = order.TotalAmount,
         Status = order.Status.ToString(),
         CreatedAt = order.CreatedAt,
+
         Items = order.OrderItems?.Select(oi => new OrderItemDto
         {
             ProductId = oi.ProductId,
