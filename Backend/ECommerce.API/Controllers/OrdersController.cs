@@ -33,10 +33,22 @@ public class OrdersController : ControllerBase
         Ok(await _orderService.GetUserOrdersAsync(GetUserId()));
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetOrder(int id) =>
-        Ok(await _orderService.GetOrderByIdAsync(id));
+    public async Task<IActionResult> GetOrder(int id)
+    {
+        var result = await _orderService.GetOrderByIdAsync(id);
 
-    [Authorize(Roles = "Admin")]
+        if (!result.Success)
+            return NotFound(result);
+
+        var userId = GetUserId();
+        var isAdmin = User.IsInRole("Admin");
+
+        if (result.Data.UserId != userId && !isAdmin)
+            return Forbid();
+
+        return Ok(result);
+    }
+
     [HttpPut("{id}/status")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] OrderStatus status)
     {
