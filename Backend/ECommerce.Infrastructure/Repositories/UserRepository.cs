@@ -14,5 +14,9 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             .FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
 
     public async Task<bool> EmailExistsAsync(string email) =>
-        await _dbSet.AnyAsync(u => u.Email == email);
+    await _context.Users.AnyAsync(u => u.Email == email && u.IsActive);
+
+    public async Task<IReadOnlyList<User>> GetAllUsersWithRolesAsync() =>
+        await _dbSet.Include(u => u.Role).ToListAsync();
+
 }

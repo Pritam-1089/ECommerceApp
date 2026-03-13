@@ -1,5 +1,6 @@
 using ECommerce.Application.DTOs.Auth;
 using ECommerce.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers;
@@ -19,6 +20,15 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var result = await _authService.RegisterAsync(dto);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("register-admin")]
+    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDto dto)
+    {
+        var result = await _authService.RegisterAdminAsync(dto);
         if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
