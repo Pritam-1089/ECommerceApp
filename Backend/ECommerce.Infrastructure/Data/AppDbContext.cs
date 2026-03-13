@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Infrastructure.Data;
 
+
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -109,6 +110,19 @@ public class AppDbContext : DbContext
             new Role { Id = 1, Name = "Admin", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
             new Role { Id = 2, Name = "Customer", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
         );
+
+        // Seed Admin User (password: Admin@123)
+        modelBuilder.Entity<User>().HasData(new User
+        {
+            Id = 1,
+            FirstName = "Admin",
+            LastName = "User",
+            Email = "admin@ecommerce.com",
+            PasswordHash = "tZOBeHHxo1QXurQLCcV8+Kj6tYs8pXMWYxu9fUhPighe/Co2eAt/2SjGleZIrX7ofD7gjJsEnslCgtXbzHmYlQGJgS2sQ1d3eIZKbLQBEtaBN8+JvaPb9XCY3XccttJMIsu2CNR0AMjrIIXJ6YULzpopPOXMcRyq3OmOE/ZgjTA=.wP2mVCjA9rLVSquBDmUAVv3ngUO5DiQtpkGtHi0CuVUi+2z6cyt3Jli+gDBA8pGpW7Tf5ms8awrPB42kHley3Q==",
+            Phone = "0000000000",
+            RoleId = 1,
+            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

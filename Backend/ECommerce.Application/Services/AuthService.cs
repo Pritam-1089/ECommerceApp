@@ -52,6 +52,33 @@ public class AuthService : IAuthService
         }, "Registration successful");
     }
 
+    public async Task<ApiResponse<AuthResponseDto>> RegisterAdminAsync(RegisterDto dto)
+    {
+        if (await _userRepo.EmailExistsAsync(dto.Email))
+            return ApiResponse<AuthResponseDto>.ErrorResponse("Email already exists");
+
+        var user = new User
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Email = dto.Email,
+            Phone = dto.Phone,
+            PasswordHash = HashPassword(dto.Password),
+            RoleId = 1 // Admin
+        };
+
+        await _userRepo.AddAsync(user);
+        var dbUser = await _userRepo.GetByEmailAsync(user.Email);
+
+        return ApiResponse<AuthResponseDto>.SuccessResponse(new AuthResponseDto
+        {
+            Token = GenerateJwtToken(dbUser!),
+            Email = dbUser!.Email,
+            FullName = $"{dbUser.FirstName} {dbUser.LastName}",
+            Role = dbUser.Role.Name
+        }, "Admin registration successful");
+    }
+
     public async Task<ApiResponse<AuthResponseDto>> LoginAsync(LoginDto dto)
     {
         var user = await _userRepo.GetByEmailAsync(dto.Email);
@@ -65,6 +92,41 @@ public class AuthService : IAuthService
             FullName = $"{user.FirstName} {user.LastName}",
             Role = user.Role.Name
         }, "Login successful");
+    }
+
+    public async Task<ApiResponse<List<UserWithRoleDto>>> GetAllUsersAsync()
+    {
+        var users = await _userRepo.GetAllUsersWithRolesAsync();
+        var dtos = users.Select(u => new UserWithRoleDto
+        {
+            Id = u.Id,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            Phone = u.Phone,
+            Role = u.Role?.Name ?? "",
+            IsActive = u.IsActive,
+            CreatedAt = u.CreatedAt
+        }).ToList();
+        return ApiResponse<List<UserWithRoleDto>>.SuccessResponse(dtos);
+    }
+
+    public async Task<ApiResponse<bool>> UpdateUserRoleAsync(int userId, UpdateUserRoleDto dto, int currentUserId)
+    {
+        if (userId == currentUserId)
+            return ApiResponse<bool>.ErrorResponse("Cannot change your own role");
+
+        var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return ApiResponse<bool>.ErrorResponse("User not found");
+
+        var role = await _roleRepo.GetByIdAsync(dto.RoleId);
+        if (role == null)
+            return ApiResponse<bool>.ErrorResponse("Invalid role");
+
+        user.RoleId = dto.RoleId;
+        await _userRepo.UpdateAsync(user);
+        return ApiResponse<bool>.SuccessResponse(true, "User role updated successfully");
     }
 
     private string GenerateJwtToken(User user)

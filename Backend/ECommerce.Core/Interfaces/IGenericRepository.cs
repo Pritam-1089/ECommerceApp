@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using ECommerce.Core.Entities;
+using ECommerce.Core.Interfaces;
 
 namespace ECommerce.Core.Interfaces;
 

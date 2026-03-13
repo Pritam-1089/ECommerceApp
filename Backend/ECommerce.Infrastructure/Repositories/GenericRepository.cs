@@ -3,6 +3,7 @@ using ECommerce.Core.Entities;
 using ECommerce.Core.Interfaces;
 using ECommerce.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using ECommerce.Infrastructure.Repositories;
 
 namespace ECommerce.Infrastructure.Repositories;
 
@@ -17,10 +18,15 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         _dbSet = context.Set<T>();
     }
 
-    public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+    public async Task<T?> GetByIdAsync(int id)
+    {
+        return await _dbSet.FirstOrDefaultAsync(e => e.Id == id && e.IsActive);
+    }
 
-    public async Task<IReadOnlyList<T>> GetAllAsync() =>
-        await _dbSet.Where(e => e.IsActive).ToListAsync();
+
+    public virtual async Task<IReadOnlyList<T>> GetAllAsync() =>
+    await _dbSet.Where(e => e.IsActive).ToListAsync();
+
 
     public async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate) =>
         await _dbSet.Where(predicate).ToListAsync();

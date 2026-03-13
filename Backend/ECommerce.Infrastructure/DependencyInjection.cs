@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         // Services
         services.AddScoped<IAuthService, AuthService>();
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IAddressService, AddressService>();
 
         return services;
     }
