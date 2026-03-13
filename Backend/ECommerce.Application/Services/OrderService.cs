@@ -49,16 +49,32 @@ public class OrderService : IOrderService
             Status = PaymentStatus.Pending
         };
 
-        // Reduce stock
+        // STEP 1: Validate stock BEFORE creating order
         foreach (var item in cart.CartItems)
         {
             var product = await _productRepo.GetByIdAsync(item.ProductId);
-            if (product != null)
+
+            if (product == null)
             {
-                product.StockQuantity -= item.Quantity;
-                await _productRepo.UpdateAsync(product);
+                return ApiResponse<OrderDto>.ErrorResponse("Product not found");
+            }
+
+            if (product.StockQuantity < item.Quantity)
+            {
+                return ApiResponse<OrderDto>.ErrorResponse(
+                    $"Not enough stock for {product.Name}. Available: {product.StockQuantity}"
+                );
             }
         }
+        // STEP 2: Reduce stock AFTER validation
+foreach (var item in cart.CartItems)
+{
+    var product = await _productRepo.GetByIdAsync(item.ProductId);
+
+    product!.StockQuantity -= item.Quantity;
+
+    await _productRepo.UpdateAsync(product);
+}
 
         await _orderRepo.AddAsync(order);
         await _cartRepo.ClearCartAsync(cart);
@@ -94,10 +110,13 @@ public class OrderService : IOrderService
     private static OrderDto MapToDto(Order order) => new()
     {
         Id = order.Id,
+        UserId = order.UserId,   // ADD THIS
+
         OrderNumber = order.OrderNumber,
         TotalAmount = order.TotalAmount,
         Status = order.Status.ToString(),
         CreatedAt = order.CreatedAt,
+
         Items = order.OrderItems?.Select(oi => new OrderItemDto
         {
             ProductId = oi.ProductId,
