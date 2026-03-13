@@ -32,6 +32,20 @@ public class CategoriesController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto) =>
         Ok(await _categoryService.CreateCategoryAsync(dto));
 
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, [FromBody] CreateCategoryDto dto)
+    {
+        var result = await _categoryService.UpdateCategoryAsync(id, dto);
+
+        if (!result.Success)
+        {
+            return NotFound(result);
+        }
+
+        return Ok(result);
+    }
+
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
