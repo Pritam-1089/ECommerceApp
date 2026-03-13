@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260311095643_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260313095805_RemoveAdminSeedUseStartupSeeding")]
+    partial class RemoveAdminSeedUseStartupSeeding
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
