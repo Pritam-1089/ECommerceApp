@@ -81,24 +81,8 @@ public class AuthService : IAuthService
 
     public async Task<ApiResponse<AuthResponseDto>> LoginAsync(LoginDto dto)
     {
-        Console.WriteLine("LOGIN EMAIL: " + dto.Email);
-
         var user = await _userRepo.GetByEmailAsync(dto.Email);
-
-        if (user == null)
-        {
-            Console.WriteLine("USER NOT FOUND IN DATABASE");
-            return ApiResponse<AuthResponseDto>.ErrorResponse("Invalid email or password");
-        }
-
-        Console.WriteLine("DB EMAIL: " + user.Email);
-        Console.WriteLine("DB HASH: " + user.PasswordHash);
-
-        var verify = VerifyPassword(dto.Password, user.PasswordHash);
-
-        Console.WriteLine("PASSWORD MATCH RESULT: " + verify);
-
-        if (!verify)
+        if (user == null || !VerifyPassword(dto.Password, user.PasswordHash))
             return ApiResponse<AuthResponseDto>.ErrorResponse("Invalid email or password");
 
         return ApiResponse<AuthResponseDto>.SuccessResponse(new AuthResponseDto
@@ -109,7 +93,6 @@ public class AuthService : IAuthService
             Role = user.Role.Name
         }, "Login successful");
     }
-
 
     public async Task<ApiResponse<List<UserWithRoleDto>>> GetAllUsersAsync()
     {
@@ -177,17 +160,13 @@ public class AuthService : IAuthService
     }
 
     private static bool VerifyPassword(string password, string storedHash)
-{
-    var parts = storedHash.Split('.');
-    if (parts.Length != 2) return false;
-
-    var hash = Convert.FromBase64String(parts[0]); // hash
-    var salt = Convert.FromBase64String(parts[1]); // salt
-
-    using var hmac = new HMACSHA512(salt);
-    var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-    return computedHash.SequenceEqual(hash);
-}
-
+    {
+        var parts = storedHash.Split('.');
+        if (parts.Length != 2) return false;
+        var salt = Convert.FromBase64String(parts[0]);
+        var hash = Convert.FromBase64String(parts[1]);
+        using var hmac = new HMACSHA512(salt);
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return computedHash.SequenceEqual(hash);
+    }
 }
