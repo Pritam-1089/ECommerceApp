@@ -509,20 +509,6 @@ namespace ECommerce.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@ecommerce.com",
-                            FirstName = "Admin",
-                            IsActive = true,
-                            LastName = "User",
-                            PasswordHash = "tZOBeHHxo1QXurQLCcV8+Kj6tYs8pXMWYxu9fUhPighe/Co2eAt/2SjGleZIrX7ofD7gjJsEnslCgtXbzHmYlQGJgS2sQ1d3eIZKbLQBEtaBN8+JvaPb9XCY3XccttJMIsu2CNR0AMjrIIXJ6YULzpopPOXMcRyq3OmOE/ZgjTA=.wP2mVCjA9rLVSquBDmUAVv3ngUO5DiQtpkGtHi0CuVUi+2z6cyt3Jli+gDBA8pGpW7Tf5ms8awrPB42kHley3Q==",
-                            Phone = "0000000000",
-                            RoleId = 1
-                        });
                 });
 
             modelBuilder.Entity("ECommerce.Core.Entities.Address", b =>
