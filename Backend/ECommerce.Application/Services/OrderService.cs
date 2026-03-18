@@ -82,6 +82,12 @@ foreach (var item in cart.CartItems)
         return ApiResponse<OrderDto>.SuccessResponse(MapToDto(order), "Order placed successfully");
     }
 
+    public async Task<ApiResponse<List<OrderDto>>> GetAllOrdersAsync()
+    {
+        var orders = await _orderRepo.GetAllOrdersAsync();
+        return ApiResponse<List<OrderDto>>.SuccessResponse(orders.Select(MapToDto).ToList());
+    }
+
     public async Task<ApiResponse<List<OrderDto>>> GetUserOrdersAsync(int userId)
     {
         var orders = await _orderRepo.GetOrdersByUserIdAsync(userId);
@@ -96,11 +102,25 @@ foreach (var item in cart.CartItems)
         return ApiResponse<OrderDto>.SuccessResponse(MapToDto(order));
     }
 
+    private static readonly Dictionary<OrderStatus, OrderStatus[]> _validTransitions = new()
+    {
+        { OrderStatus.Pending, new[] { OrderStatus.Confirmed, OrderStatus.Cancelled } },
+        { OrderStatus.Confirmed, new[] { OrderStatus.Processing, OrderStatus.Cancelled } },
+        { OrderStatus.Processing, new[] { OrderStatus.Shipped, OrderStatus.Cancelled } },
+        { OrderStatus.Shipped, new[] { OrderStatus.Delivered } },
+        { OrderStatus.Delivered, new[] { OrderStatus.Returned } },
+    };
+
     public async Task<ApiResponse<OrderDto>> UpdateOrderStatusAsync(int orderId, OrderStatus status)
     {
         var order = await _orderRepo.GetOrderWithDetailsAsync(orderId);
         if (order == null)
             return ApiResponse<OrderDto>.ErrorResponse("Order not found");
+
+        if (!_validTransitions.ContainsKey(order.Status) ||
+            !_validTransitions[order.Status].Contains(status))
+            return ApiResponse<OrderDto>.ErrorResponse(
+                $"Invalid status transition from {order.Status} to {status}");
 
         order.Status = status;
         await _orderRepo.UpdateAsync(order);
