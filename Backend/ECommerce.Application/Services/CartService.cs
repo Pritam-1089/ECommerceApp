@@ -28,11 +28,12 @@ public class CartService : ICartService
         if (product == null)
             return ApiResponse<CartDto>.ErrorResponse("Product not found");
 
-        if (product.StockQuantity < dto.Quantity)
-            return ApiResponse<CartDto>.ErrorResponse("Insufficient stock");
-
         var cart = await GetOrCreateCartAsync(userId);
         var existingItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == dto.ProductId);
+
+        var totalQty = (existingItem?.Quantity ?? 0) + dto.Quantity;
+        if (product.StockQuantity < totalQty)
+            return ApiResponse<CartDto>.ErrorResponse($"Insufficient stock. Available: {product.StockQuantity}, In cart: {existingItem?.Quantity ?? 0}");
 
         if (existingItem != null)
         {

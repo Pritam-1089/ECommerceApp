@@ -9,6 +9,14 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
 {
     public OrderRepository(AppDbContext context) : base(context) { }
 
+    public async Task<IReadOnlyList<Order>> GetAllOrdersAsync() =>
+        await _dbSet.Where(o => o.IsActive)
+            .Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
+            .Include(o => o.ShippingAddress)
+            .Include(o => o.Payment)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+
     public async Task<IReadOnlyList<Order>> GetOrdersByUserIdAsync(int userId) =>
         await _dbSet.Where(o => o.UserId == userId && o.IsActive)
             .Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
