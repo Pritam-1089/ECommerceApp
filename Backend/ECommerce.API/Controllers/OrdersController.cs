@@ -32,6 +32,11 @@ public class OrdersController : ControllerBase
     public async Task<IActionResult> GetMyOrders() =>
         Ok(await _orderService.GetUserOrdersAsync(GetUserId()));
 
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllOrders() =>
+        Ok(await _orderService.GetAllOrdersAsync());
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(int id)
     {
