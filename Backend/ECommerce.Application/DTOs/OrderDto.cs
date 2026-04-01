@@ -1,4 +1,5 @@
 using ECommerce.Core.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace ECommerce.Application.DTOs;
 
@@ -30,10 +31,18 @@ public class OrderItemDto
 
 public class CreateOrderDto
 {
+    [Required(ErrorMessage = "Shipping address is required")]
     public int ShippingAddressId { get; set; }
-    public PaymentMethod PaymentMethod { get; set; }
-}
 
+    [Required(ErrorMessage = "Payment method is required")]
+    public PaymentMethod PaymentMethod { get; set; }
+
+    [Required(ErrorMessage = "At least one product is required")]
+    public List<int> ProductIds { get; set; } = new List<int>();
+
+    [Range(0.01, double.MaxValue, ErrorMessage = "Total amount must be positive")]
+    public decimal TotalAmount { get; set; }
+}
 public class CartDto
 {
     public int Id { get; set; }
