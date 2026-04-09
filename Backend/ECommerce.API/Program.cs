@@ -4,6 +4,7 @@ using ECommerce.Infrastructure.Data;
 using ECommerce.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ECommerce.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
