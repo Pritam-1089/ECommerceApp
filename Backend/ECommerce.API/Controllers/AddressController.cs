@@ -1,8 +1,9 @@
-using System.Security.Claims;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace ECommerce.API.Controllers;
 
@@ -48,4 +49,20 @@ public class AddressController : ControllerBase
         var result = await _addressService.DeleteAddressAsync(GetUserId(), id);
         return result.Success ? Ok(result) : NotFound(result);
     }
+
+    [HttpGet("pincode/{pincode}")]
+    public async Task<IActionResult> GetAddressByPincode(string pincode)
+    {
+        using var client = new HttpClient();
+
+        var response = await client.GetAsync($"https://api.postalpincode.in/pincode/{pincode}");
+
+        var stream = await response.Content.ReadAsStreamAsync();
+
+        var json = await JsonSerializer.DeserializeAsync<object>(stream);
+
+        return Ok(json);
+    }
+
+
 }
