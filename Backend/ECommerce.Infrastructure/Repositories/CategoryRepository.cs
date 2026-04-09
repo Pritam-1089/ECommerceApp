@@ -16,8 +16,9 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
     public async Task<IReadOnlyList<Category>> GetAllWithSubCategoriesAsync()
     {
         return await _context.Categories
-            .Where(c => c.ParentCategoryId == null)
-            .Include(c => c.SubCategories)
+            .Where(c => c.ParentCategoryId == null && c.IsActive) // parent categories only
+            .Include(c => c.SubCategories.Where(sc => sc.IsActive)) // filter subcategories
+            .AsNoTracking()
             .ToListAsync();
     }
 }
