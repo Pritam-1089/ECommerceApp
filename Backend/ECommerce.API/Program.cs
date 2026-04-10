@@ -14,8 +14,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Controllers
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<AddressService>();
-
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

@@ -98,6 +98,34 @@ namespace ECommerce.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-    }
+
+        [HttpGet("product/{productId}")]
+        public async Task<IActionResult> GetReviews(int productId)
+        {
+            try
+            {
+                var result = await _reviewService.GetReviewsByProductIdAsync(productId);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("product/{productId}/rating")]
+        public async Task<IActionResult> GetRating(int productId)
+        {
+            try
+            {
+                var result = await _reviewService.GetProductRatingAsync(productId);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+     }
 }
 

@@ -104,6 +104,61 @@ namespace ECommerce.Infrastructure.Services
                 CreatedAt = review.CreatedAt
             };
         }
+
+        public async Task<List<ReviewDto>> GetReviewsByProductIdAsync(int productId)
+        {
+            var productExists = await _context.Products
+                .AnyAsync(p => p.Id == productId && p.IsActive);
+
+            if (!productExists)
+                throw new KeyNotFoundException("Product not found.");
+
+            var reviews = await _context.Reviews
+                .Include(r => r.User)
+                .Where(r => r.ProductId == productId)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new ReviewDto
+                {
+                    Id = r.Id,
+                    ProductId = r.ProductId,
+                    UserId = r.UserId,
+                    UserName = r.User.FirstName + " " + r.User.LastName,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt
+                })
+                .ToListAsync();
+
+            return reviews;
+        }
+
+        public async Task<ProductRatingDto> GetProductRatingAsync(int productId)
+        {
+            var productExists = await _context.Products
+                .AnyAsync(p => p.Id == productId && p.IsActive);
+
+            if (!productExists)
+                throw new KeyNotFoundException("Product not found.");
+
+            var reviews = await _context.Reviews
+                .Where(r => r.ProductId == productId)
+                .ToListAsync();
+
+            if (!reviews.Any())
+            {
+                return new ProductRatingDto
+                {
+                    AverageRating = 0,
+                    TotalReviews = 0
+                };
+            }
+
+            return new ProductRatingDto
+            {
+                AverageRating = Math.Round(reviews.Average(r => r.Rating), 1),
+                TotalReviews = reviews.Count
+            };
+        }
     }
 
     }
