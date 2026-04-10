@@ -28,21 +28,22 @@ public class OrderItemDto
     public decimal UnitPrice { get; set; }
     public decimal TotalPrice { get; set; }
 }
-
 public class CreateOrderDto
 {
-    [Required(ErrorMessage = "Shipping address is required")]
-    public int ShippingAddressId { get; set; }
+    [Required]
+    public int UserId { get; set; }
 
-    [Required(ErrorMessage = "Payment method is required")]
+    [Required]
+    public int ShippingAddressId { get; set; }   // ? ADD
+
+    [Required]
     public PaymentMethod PaymentMethod { get; set; }
 
-    [Required(ErrorMessage = "At least one product is required")]
-    public List<int> ProductIds { get; set; } = new List<int>();
-
-    [Range(0.01, double.MaxValue, ErrorMessage = "Total amount must be positive")]
-    public decimal TotalAmount { get; set; }
+    [Required]
+    [MinLength(1)]
+    public List<OrderItemDto> Items { get; set; } = new();
 }
+
 public class CartDto
 {
     public int Id { get; set; }
