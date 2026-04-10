@@ -1,11 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ECommerce.Application.DTOs;
 
 public class UpdateUserRoleDto
 {
+    [Required]
+    public int UserId { get; set; }
+
+    [Required]
     public int RoleId { get; set; }
 }
-
-public class UserWithRoleDto
+    public class UserWithRoleDto
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = string.Empty;

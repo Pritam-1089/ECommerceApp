@@ -33,10 +33,10 @@ public class ProductDto
     public double AverageRating { get; set; }
     public int ReviewCount { get; set; }
 }
-
 public class CreateProductDto
 {
-    [Required, StringLength(200)]
+    [Required]
+    [StringLength(200)]
     public string Name { get; set; } = string.Empty;
 
     [Required]
@@ -48,18 +48,16 @@ public class CreateProductDto
     [Range(0.01, double.MaxValue)]
     public decimal Price { get; set; }
 
-    [Range(0.01, double.MaxValue)]
-    public decimal? DiscountPrice { get; set; }
+    public decimal? DiscountPrice { get; set; }   // ? ADD THIS
+
+    public string? ImageUrl { get; set; }         // ? ADD THIS
 
     [Range(0, int.MaxValue)]
     public int StockQuantity { get; set; }
 
-    public string ImageUrl { get; set; } = string.Empty;
-
     [Required]
     public int CategoryId { get; set; }
 }
-
 public class UpdateProductDto
 {
     [Required, StringLength(200)]
