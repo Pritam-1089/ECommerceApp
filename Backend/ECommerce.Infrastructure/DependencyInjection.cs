@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IAddressService, AddressService>();
+        services.AddScoped<IReviewService, ReviewService>();
 
         return services;
     }

@@ -4,6 +4,7 @@ using ECommerce.Infrastructure.Data;
 using ECommerce.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ECommerce.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +13,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Controllers
 builder.Services.AddControllers();
-
-builder.Services.AddScoped<AddressService>();
 
 
 // Swagger
