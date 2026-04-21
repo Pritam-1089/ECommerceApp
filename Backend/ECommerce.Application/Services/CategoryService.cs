@@ -7,16 +7,16 @@ namespace ECommerce.Application.Services;
 
 public class CategoryService : ICategoryService
 {
-    private readonly IGenericRepository<Category> _categoryRepo;
+    private readonly ICategoryRepository _categoryRepo;
 
-    public CategoryService(IGenericRepository<Category> categoryRepo)
+    public CategoryService(ICategoryRepository categoryRepo)
     {
         _categoryRepo = categoryRepo;
     }
 
     public async Task<ApiResponse<List<CategoryDto>>> GetAllCategoriesAsync()
     {
-        var categories = await _categoryRepo.GetAllAsync();
+        var categories = await _categoryRepo.GetAllWithSubCategoriesAsync();
         var dtos = categories.Select(MapToDto).ToList();
         return ApiResponse<List<CategoryDto>>.SuccessResponse(dtos);
     }

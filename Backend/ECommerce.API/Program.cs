@@ -1,10 +1,8 @@
 using System.Text;
 using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Data;
-using ECommerce.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using ECommerce.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +11,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Controllers
 builder.Services.AddControllers();
-
-builder.Services.AddScoped<AddressService>();
 
 
 // Swagger
@@ -76,11 +72,11 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.SeedAdminAsync(context);
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapGet("/", () => Results.Redirect("/swagger"))
+    .ExcludeFromDescription();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAngular");
